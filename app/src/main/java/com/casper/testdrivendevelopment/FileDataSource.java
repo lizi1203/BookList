@@ -2,6 +2,8 @@ package com.casper.testdrivendevelopment;
 
 import android.content.Context;
 
+import com.casper.testdrivendevelopment.data.mode.Book;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

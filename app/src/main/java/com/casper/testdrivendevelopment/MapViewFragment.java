@@ -2,6 +2,8 @@ package com.casper.testdrivendevelopment;
 
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,11 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.casper.testdrivendevelopment.data.ShopLoader;
+import com.casper.testdrivendevelopment.data.mode.Shop;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 
 /**
@@ -65,9 +72,51 @@ public class MapViewFragment extends Fragment {
                 return false;
             }
     });
+        final ShopLoader shopLoader=new ShopLoader();
+        Handler handler=new Handler(){
+            public void handleMessage(Message message){
+                shopLoader.getShops();
+            };
+        };
+        downloadAndDrawShops(baiduMap);
 
-       return view;
+        return view;
     }
+
+    private void downloadAndDrawShops(final BaiduMap baiduMap) {
+        final ShopLoader shopLoader=new ShopLoader();
+        final Handler handler=new Handler()
+        {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                for(int i=0;i<shopLoader.getShops().size();++i)
+                {
+                    Shop shop=shopLoader.getShops().get(i);
+                    LatLng point = new LatLng(shop.getLatitude(), shop.getLongitude());
+
+                    BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.book_icon);
+                    MarkerOptions markerOption = new MarkerOptions().icon(bitmap).position(point);
+                    Marker marker = (Marker) baiduMap.addOverlay(markerOption);
+                    //添加文字
+                    OverlayOptions textOption = new TextOptions().bgColor(0xAAFFFF00).fontSize(50)
+                            .fontColor(0xFFFF00FF).text(shop.getName()).rotate(0).position(point);
+                    baiduMap.addOverlay(textOption);
+                }
+
+            }
+        };
+        Runnable run=new Runnable() {
+            @Override
+            public void run() {
+                String data=shopLoader.download("http://file.nidama.net/class/mobile_develop/data/bookstore.json");
+                shopLoader.parseJson(data);
+                handler.sendEmptyMessage(1);
+            }
+        };
+        new Thread(run).start();
+    }
+   private MapView mMapView=null;
     @Override
     public void onResume() {
         super.onResume();

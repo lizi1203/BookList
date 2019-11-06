@@ -1,4 +1,4 @@
-package com.casper.testdrivendevelopment;
+package com.casper.testdrivendevelopment.data.mode;
 
 import java.io.Serializable;
 
