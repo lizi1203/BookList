@@ -176,8 +176,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 xTouch=0;
                 yTouch=0;
                 click=false;
+                x= (int) (GameView.this.getWidth()*Math.random());
+                y= (int) (GameView.this.getHeight()*Math.random());
+                directionAgle=Math.random()*2*Math.PI;
                 this.move();
-            }
+        }
             }
         }
 
